@@ -18,7 +18,7 @@ This repo is separate so it can be public and change without touching XWORD_BUIL
   ```
   wordlists/spreadthewordlist.txt
   ATTRIBUTION.md
-  nyt-cookie.txt     (optional, written by the user, mode 600)
+  nyt/cookie.txt     (optional, written by the user, mode 600)
   nyt/raw/           (optional, cached puzzles)
   nyt/word-data.json (optional)
   ```
@@ -28,10 +28,15 @@ This repo is separate so it can be public and change without touching XWORD_BUIL
   - `src/model`, `src/engine` (no worker or client files), `src/rules`, `src/io/ipuz.ts` and `src/io/nytJson.ts`
   - `scripts/xwCommands.ts`, `xw.ts` and `nyt-history.ts`
 
-  esbuild then bundles `dist/xw.mjs` and `dist/nyt-history.mjs`. **The `dist/` files are committed**, because a plugin installs by git clone and has no build step for the user. Users need only Node 20 or later.
+  esbuild then bundles `plugin/dist/xw.mjs`, `nyt.mjs` and `setup.mjs`. **The `dist/` files are committed**, because a plugin installs by git clone and has no build step for the user. Users need only Node 20 or later.
+- **The plugin lives in `plugin/`.** The repo root holds the marketplace (`.claude-plugin/marketplace.json`, source `./plugin`) and the development files. So only the plugin installs, and this repo's `CLAUDE.md` isn't inside the plugin, where `claude plugin validate` would warn about it.
+- **Skills find the tools through `${CLAUDE_PLUGIN_ROOT}`,** which Claude Code substitutes in skill text (it isn't set in the Bash environment). The plugin has no `bin/` folder, because claude.ai won't install a plugin with one.
+- **Setup is a skill, `/grid-guide:setup`,** not a `commands/` file: the docs prefer skills for new plugins.
+- **The wordlist is Spread the Word(list)** by Brooke Husic and Enrique Henestroza Anguiano, CC BY-NC-SA 4.0. Its site allows use in free products with attribution, and selling puzzles built with it. Setup downloads `https://www.spreadthewordlist.com/downloads/spreadthewordlist_caps.txt` (304,410 `WORD;SCORE` lines) and credits it in `ATTRIBUTION.md` and on the hand-off page.
+- **Setup cleans the list the way XWORD_BUILDER's was cleaned.** `plugin/data/removed-words.txt` holds the 98,679 words XWORD_BUILDER removed (its untouched download minus its list), and `sync` rewrites it. Setup subtracts them, so a fresh setup matches XWORD_BUILDER's 205,731-word list byte for byte. `--full` keeps every word. The file is derived from the list, so it is CC BY-NC-SA 4.0, not MIT.
 - **Path changes are kept as small patches over the vendored copies.** `xw.ts` and `nyt-history.ts` take their wordlist, word-data, raw and cookie paths from the data folder instead of the repo. The upstream logic is otherwise untouched, so `sync` stays a plain copy plus patches.
 - **`nytHistory.json` is bundled.** It holds only per-puzzle derived metrics, so the difficulty rank works with no NYT download. Familiarity, "Uses" and the candidate ranking need `word-data.json`, which is the optional NYT step.
-- **No wordlist or NYT data in this repo, ever.** `.gitignore` covers `data/`, `*.txt` lists and `nyt/`.
+- **No wordlist or NYT data in this repo, ever.** `.gitignore` covers `wordlists/`, `*.dict`, `nyt/`, `cookie.txt` and `scratch/`.
 - **Hand-off:** publish the template as a private Artifact when the Artifact tool exists. Otherwise, save the HTML file next to the `.ipuz` and give its path.
 
 ## Phases
@@ -48,7 +53,7 @@ Each phase ends with a check that can be run.
 - **Check:** with a wordlist in `~/.grid-guide/`, run `node dist/xw.mjs new /tmp/t.ipuz --size 5`, then `fill` and `check`. It produces a filled, error-free grid. Port the relevant `tests/cli/` cases. Re-running `sync` with no upstream change produces no diff.
 
 ### 2. Setup: the wordlist
-- Write `commands/setup.md` (the `/grid-guide:setup` slash command) and a `dist/setup.mjs` helper with three steps:
+- Write the `setup` skill (`/grid-guide:setup`) and a `dist/setup.mjs` helper with three steps:
   1. Download the list from its official source into `~/.grid-guide/wordlists/`.
   2. Sanity-check it: line count and `WORD;SCORE` format.
   3. Write `ATTRIBUTION.md` and print the credit and license.
@@ -65,13 +70,13 @@ Each phase ends with a check that can be run.
 - **Walkthrough, if they choose to go ahead:**
   1. Sign in at nytimes.com in a desktop browser.
   2. Open the developer tools, go to Application (Storage in Firefox), then Cookies, then `https://www.nytimes.com`, and copy the value of `NYT-S`.
-  3. Save it yourself with the command the walkthrough shows (writes `~/.grid-guide/nyt-cookie.txt`, mode 600), or export `NYT_S`.
+  3. Save it yourself with the command the walkthrough shows (writes `~/.grid-guide/nyt/cookie.txt`, mode 600), or export `NYT_S`.
   4. **Never paste the cookie into the chat.** It is a login credential and would stay in the transcript.
-  5. Claude checks that the file exists (never its contents), then runs `dist/nyt-history.mjs` in the background.
+  5. Claude checks that the file exists (never its contents), then runs `dist/nyt.mjs` in the background.
   6. The download resumes where it left off: already-cached puzzles are skipped.
   7. If NYT rejects the cookie partway through, the script stops and the walkthrough repeats steps 1–3.
 - The puzzles stay on the user's machine. This repo never contains them.
-- **Check:** with a valid cookie and `--from`/`--to` set to one week, about 7 puzzles land and `word-data.json` is written. With a bad cookie, the walkthrough's refresh message appears.
+- **Check:** with `--from`/`--to` set to one week, 7 puzzles land and `word-data.json` is written. With no cookie, the tool points to setup. A refused cookie couldn't be tested: NYT served recent puzzles even with a made-up cookie.
 
 ### 4. Port the skills
 - Point `build-puzzle` at `node ${CLAUDE_PLUGIN_ROOT}/dist/xw.mjs` and drop "Confirm it in the app" (there's no app).
@@ -82,7 +87,7 @@ Each phase ends with a check that can be run.
 - **Check:** in a clean folder with only the plugin installed, "build a 15×15 with SPACESHIP and MOONWALK" produces an `.ipuz`, a passing `check`, and a hand-off page. Critiquing that file returns a review.
 
 ### 5. Package and test the install
-- Write `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`.
+- Write `plugin/.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Both pass `claude plugin validate`.
 - **Check:**
   - `/plugin marketplace add /Users/eric.ribbeck/Documents/XWORD_PLUGIN` and `/plugin install` work from an unrelated folder.
   - Setup runs.
@@ -96,5 +101,5 @@ Each phase ends with a check that can be run.
 
 | Question | Why it matters |
 |---|---|
-| What is the wordlist's exact license, and its official download URL? | Sets the attribution text, and whether an automatic download is fine. A web search couldn't confirm either. |
-| Does `${CLAUDE_PLUGIN_ROOT}` expand inside skill text, or only in hooks and MCP config? | Decides how the skills find `dist/xw.mjs`. The fallback is a `/grid-guide:` command or a small wrapper script. Verify in phase 4. |
+| Do NYT puzzles older than a few weeks need a valid cookie, and does a refused cookie stop the script as expected? | The refused-cookie path is untested, because recent puzzles downloaded without a valid cookie. The first full download will show it. |
+| Should XWORD_BUILDER's `critique-clues` description be quoted? | Its unquoted `:` makes the YAML fail to parse, so Claude Code loads that skill with no description. The plugin copy is quoted. |

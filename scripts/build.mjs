@@ -1,11 +1,11 @@
-// Bundles each entry in src/ into one self-contained file in dist/, committed so users need only Node.
+// Bundles each entry in src/ into one self-contained file in plugin/dist/, committed so users need only Node.
 import { build } from 'esbuild';
 import { existsSync } from 'node:fs';
 
 const entries = ['xw', 'nyt', 'setup'].filter((name) => existsSync(`src/${name}.ts`));
 await build({
   entryPoints: entries.map((name) => ({ in: `src/${name}.ts`, out: name })),
-  outdir: 'dist',
+  outdir: 'plugin/dist',
   outExtension: { '.js': '.mjs' },
   bundle: true,
   platform: 'node',

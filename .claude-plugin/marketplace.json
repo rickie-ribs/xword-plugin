@@ -1,0 +1,14 @@
+{
+  "name": "xword-plugin",
+  "owner": {
+    "name": "Eric Ribbeck"
+  },
+  "description": "Crossword construction tools for Claude Code.",
+  "plugins": [
+    {
+      "name": "grid-guide",
+      "source": "./plugin",
+      "description": "Build filled crossword grids from your theme words and critique clues."
+    }
+  ]
+}
