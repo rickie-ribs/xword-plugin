@@ -1,5 +1,5 @@
 /**
- * Writes the submission PDF for an .ipuz file, in the layout of the vendored F7 export (vendor/src/io/pdf.ts):
+ * Writes the submission PDF for an .ipuz file, in the layout of the F7 export (vendor/src/io/pdf.ts):
  * page 1 is the contact block and the filled grid, then Across and Down with answers. The contact block comes
  * from ~/.grid-guide/contact.txt, one line each. Reports empty squares and missing clues, which print as gaps.
  *

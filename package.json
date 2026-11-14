@@ -9,7 +9,6 @@
     "node": ">=20"
   },
   "scripts": {
-    "sync": "tsx scripts/sync.ts",
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"

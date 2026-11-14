@@ -7,3 +7,5 @@ cookie.txt
 scratch/
 .DS_Store
 docs/test-plan.md
+PLAN.md
+scripts/sync.ts

@@ -1,6 +1,6 @@
 /**
  * The plugin's command-line tool. `doctor` reports what setup has installed; every other command goes to the
- * vendored xw script (vendor/scripts/xw.ts lists them), once the wordlist it needs is in place.
+ * xw script (vendor/scripts/xw.ts lists them), once the wordlist it needs is in place.
  */
 import { existsSync } from 'node:fs';
 import { COOKIE, GRID_GUIDE_HOME, WORD_DATA, WORDLIST } from './home';

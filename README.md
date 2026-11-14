@@ -78,7 +78,7 @@ Run Claude Code on the computer where you ran setup, turn on Remote Control, and
 
 - `plugin/skills/`: `setup`, `build-puzzle`, `critique-clues` and `submission-pdf`
 - `plugin/dist/`: the bundled command-line tool the skills run (`xw.mjs`), plus the PDF maker (`pdf.mjs`) and the setup and NYT download helpers
-- The grid, fill and validation code comes from the author's crossword workbench, copied into `vendor/` by `npm run sync`.
+- The grid, fill, validation and `.ipuz` code is in `vendor/`.
 
 ## Credits and licenses
 

@@ -1,1 +1,1 @@
-Copied from XWORD_BUILDER by `npm run sync` (scripts/sync.ts), with its data paths patched to ~/.grid-guide. Do not edit by hand.
+The engine behind the `xw` and NYT history tools: model, fill engine, rules and `.ipuz` I/O. Its data paths point at ~/.grid-guide.
