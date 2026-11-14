@@ -29,10 +29,6 @@ You need [Node.js](https://nodejs.org/) 20 or later on your computer. Pick which
 
    > Install the grid-guide plugin for me by running these two commands in the shell: `claude plugin marketplace add rickie-ribs/xword-plugin` and then `claude plugin install grid-guide@xword-plugin`. After that, set up grid-guide.
 
-3. When it's done, start a new session so the plugin loads, and send:
-
-   > set up grid-guide
-
 ### Terminal
 
 Run these in your shell (zsh, bash or PowerShell):
