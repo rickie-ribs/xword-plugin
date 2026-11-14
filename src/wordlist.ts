@@ -13,3 +13,11 @@ export function checkList(text: string): number {
   if (good < lines.length * 0.99) throw new Error(`Only ${good} of ${lines.length} lines are WORD;SCORE.`);
   return lines.length;
 }
+
+/** Drops the lines whose word is in `removed` (one word per line, `#` comments). Returns the list and how many went. */
+export function removeWords(text: string, removed: string): { text: string; dropped: number } {
+  const drop = new Set(removed.split(/\r?\n/).filter((l) => l && !l.startsWith('#')));
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  const kept = lines.filter((l) => !drop.has(l.split(';')[0]!));
+  return { text: `${kept.join('\n')}\n`, dropped: lines.length - kept.length };
+}

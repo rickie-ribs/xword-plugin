@@ -1,6 +1,7 @@
 // src/setup.ts
 import { copyFileSync, existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join as join2 } from "node:path";
+import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
 
 // src/home.ts
@@ -25,11 +26,19 @@ function checkList(text) {
   if (good < lines.length * 0.99) throw new Error(`Only ${good} of ${lines.length} lines are WORD;SCORE.`);
   return lines.length;
 }
+function removeWords(text, removed) {
+  const drop = new Set(removed.split(/\r?\n/).filter((l) => l && !l.startsWith("#")));
+  const lines = text.split(/\r?\n/).filter(Boolean);
+  const kept = lines.filter((l) => !drop.has(l.split(";")[0]));
+  return { text: `${kept.join("\n")}
+`, dropped: lines.length - kept.length };
+}
 
 // src/setup.ts
+var REMOVED = join2(dirname(fileURLToPath(import.meta.url)), "..", "data", "removed-words.txt");
 var SOURCE = "https://www.spreadthewordlist.com/downloads/spreadthewordlist_caps.txt";
 async function main() {
-  const { values: args } = parseArgs({ options: { from: { type: "string" }, update: { type: "boolean" } } });
+  const { values: args } = parseArgs({ options: { from: { type: "string" }, update: { type: "boolean" }, full: { type: "boolean" } } });
   if (existsSync(WORDLIST) && !args.update && !args.from) {
     console.log(`A wordlist is already in place at ${WORDLIST}. Add --update to download it again.`);
     return;
@@ -49,7 +58,14 @@ The user's own list, copied from ${args.from}.
   console.log(`Downloading ${SOURCE} ...`);
   const response = await fetch(SOURCE);
   if (!response.ok) throw new Error(`The download failed (${response.status}).`);
-  const text = await response.text();
+  let text = await response.text();
+  checkList(text);
+  let note = "the full list";
+  if (!args.full) {
+    const cleaned = removeWords(text, readFileSync(REMOVED, "utf8"));
+    text = cleaned.text;
+    note = `cleaned: ${cleaned.dropped} junk, offensive or obscure words removed; --full keeps them`;
+  }
   const count = checkList(text);
   writeFileSync(partial, text);
   renameSync(partial, WORDLIST);
@@ -57,9 +73,9 @@ The user's own list, copied from ${args.from}.
 
 ${CREDIT}
 
-Downloaded ${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)} from ${SOURCE}.
+Downloaded ${(/* @__PURE__ */ new Date()).toISOString().slice(0, 10)} from ${SOURCE}; ${note}.
 `);
-  console.log(`Saved ${count} words to ${WORDLIST}.
+  console.log(`Saved ${count} words to ${WORDLIST} (${note}).
 
 ${CREDIT}`);
 }

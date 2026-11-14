@@ -5,7 +5,7 @@
  *
  *   npm run sync [-- --from ../XWORD_BUILDER]
  */
-import { cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { parseArgs } from 'node:util';
 
 const { values: args } = parseArgs({ options: { from: { type: 'string', default: '../XWORD_BUILDER' } } });
@@ -47,6 +47,7 @@ const PATCHES: [string, string, string][] = [
 
 if (!existsSync(`${FROM}/scripts/xw.ts`)) throw new Error(`No XWORD_BUILDER checkout at ${FROM}`);
 rmSync(TO, { recursive: true, force: true });
+mkdirSync('plugin/data', { recursive: true });
 for (const path of FILES) cpSync(`${FROM}/${path}`, `${TO}/${path}`, { recursive: true });
 
 for (const [file, from, to] of PATCHES) {
@@ -66,6 +67,20 @@ for (const file of ['scripts/xw.ts', 'scripts/nyt-history.ts']) {
     new RegExp(`\\b${name.split(' ').at(-1)}\\b`).test(body),
   );
   writeFileSync(path, text.replace(HOME, `import { ${used.join(', ')} } from '../../src/home';`));
+}
+
+// The words XWORD_BUILDER removed from its copy of Spread the Word(list): the untouched download minus the list it
+// uses. Setup subtracts them, so a user's list matches. Derived from the list, so it carries the list's license.
+const ORIGINAL = `${FROM}/data/wordlists/review/spreadthewordlist.original.txt`;
+if (existsSync(ORIGINAL)) {
+  const words = (path: string) => readFileSync(path, 'utf8').split(/\r?\n/).filter(Boolean).map((l) => l.split(';')[0]!);
+  const kept = new Set(words(`${FROM}/data/wordlists/spreadthewordlist.txt`));
+  const removed = words(ORIGINAL).filter((w) => !kept.has(w)).sort();
+  writeFileSync(
+    'plugin/data/removed-words.txt',
+    `# ${removed.length} words removed from Spread the Word(list) (CC BY-NC-SA 4.0): junk strings, fragments, slurs and unused obscure words.\n${removed.join('\n')}\n`,
+  );
+  console.log(`Wrote ${removed.length} removed words.`);
 }
 
 writeFileSync(
