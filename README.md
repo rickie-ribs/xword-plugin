@@ -27,7 +27,7 @@ You need [Node.js](https://nodejs.org/) 20 or later on your computer. Pick which
 1. Open the **Code** tab and start a session on your computer (a local session, not a cloud one), in any folder you'd like your puzzles saved to.
 2. Paste this prompt and send it:
 
-   > Install the grid-guide plugin for me by running these two commands in the shell: `claude plugin marketplace add rickie-ribs/xword-plugin` and then `claude plugin install grid-guide@xword-plugin`.
+   > Install the grid-guide plugin for me by running these two commands in the shell: `claude plugin marketplace add rickie-ribs/xword-plugin` and then `claude plugin install grid-guide@xword-plugin`. After that, set up grid-guide.
 
 3. When it's done, start a new session so the plugin loads, and send:
 

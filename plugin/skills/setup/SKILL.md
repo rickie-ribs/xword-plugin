@@ -7,7 +7,15 @@ description: One-time setup for grid-guide. Downloads the wordlist and, if the u
 
 Setup runs once, on the computer where the user runs Claude Code. Everything goes in `~/.grid-guide/` (or `$GRID_GUIDE_HOME`) and stays there. To use grid-guide from a phone, they run Claude Code on that computer with Remote Control and drive it from the phone. Nothing is downloaded per session.
 
-The bundled tools are in `${CLAUDE_PLUGIN_ROOT}/dist/`. Start with `node "${CLAUDE_PLUGIN_ROOT}/dist/xw.mjs" doctor` to see what's already there, and skip any step that's done.
+The bundled tools are in `${CLAUDE_PLUGIN_ROOT}/dist/`. ## Open with the whole picture
+
+Before running anything, tell the user in a few lines what setup is. Don't wait to be asked.
+
+- Setup has two parts. **Part 1, the wordlist, is required.** It is automatic and takes about a minute. **Part 2, NYT history, is optional.** It takes about 15 minutes and carries a risk, so it only happens if they choose it.
+- Nothing is asked of them in part 1. After it they can start a puzzle right away. Part 2 can be done now or any time later.
+- Everything is saved on their computer in `~/.grid-guide/`.
+
+Then start with `node "${CLAUDE_PLUGIN_ROOT}/dist/xw.mjs" doctor` to see what's already there, and skip any step that's done.
 
 ## 1. The wordlist (required)
 
@@ -21,7 +29,7 @@ Then run `doctor` again to confirm.
 
 ## 2. NYT history (optional)
 
-Ask whether they want it, and give this warning first, in plain words:
+Say that part 1 is done and they can start a puzzle now. Then ask whether they want part 2, and give this warning first, in plain words:
 
 - It adds past-use counts and Freshness to puzzle hand-offs, and it ranks candidate words by how often they've run. **Everything else works without it.**
 - It needs their own New York Times Games (or All Access) subscription.
@@ -49,4 +57,9 @@ Stop here unless they clearly say yes. If they do, walk them through it one step
 
 ## Done
 
-Tell them what's installed. They can now ask for a puzzle ("build a 15×15 with these words: …") or a clue critique of an `.ipuz` file.
+End with a short summary in this shape, with plain labels:
+
+- **Done:** the wordlist is installed (say where, and give the credit from step 1). If they did part 2, say how many puzzles were kept.
+- **Not done:** NYT history, if they skipped it, in one line: optional, and they can ask for it any time by saying "set up NYT history".
+- **Needed from them:** nothing. Setup never has to be run again.
+- **Start a puzzle now:** give two or three examples they can send as they are: "build me a 15×15 with SPACESHIP and MOONWALK", "critique the clues in puzzles/space.ipuz", "make a submission PDF of puzzles/space.ipuz". Say that puzzles are saved in a `puzzles/` folder in the folder this session runs in.
