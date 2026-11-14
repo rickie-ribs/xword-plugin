@@ -20,20 +20,50 @@ It works on any `.ipuz` file, not just ones grid-guide built. If you clued the p
 
 ## Install
 
-In Claude Code:
+You need [Node.js](https://nodejs.org/) 20 or later on your computer. Pick whichever way you use Claude Code. Either one installs grid-guide for both, since they share the same settings.
 
+### Claude desktop app
+
+1. Open the **Code** tab and start a session on your computer (a local session, not a cloud one), in any folder you'd like your puzzles saved to.
+2. Paste this prompt and send it:
+
+   > Install the grid-guide plugin for me by running these two commands in the shell: `claude plugin marketplace add rickie-ribs/xword-plugin` and then `claude plugin install grid-guide@xword-plugin`.
+
+3. When it's done, start a new session so the plugin loads, and send:
+
+   > set up grid-guide
+
+### Terminal
+
+Run these in your shell (zsh, bash or PowerShell):
+
+```bash
+claude plugin marketplace add rickie-ribs/xword-plugin
 ```
-/plugin marketplace add rickie-ribs/xword-plugin
-/plugin install grid-guide@xword-plugin
+```bash
+claude plugin install grid-guide@xword-plugin
 ```
 
-Then run setup once:
+Then start Claude Code in the folder you'd like your puzzles saved to, and run setup:
 
+```bash
+claude
+```
 ```
 /grid-guide:setup
 ```
 
-You need Node 20 or later.
+Lines starting with `/` are typed at Claude's prompt, not in your shell. Inside a session, `/plugin marketplace add rickie-ribs/xword-plugin` and `/plugin install grid-guide@xword-plugin` do the same as the two shell commands.
+
+### Using it
+
+After setup, just ask, in either the app or the terminal:
+
+- **build me a 15×15 with SPACESHIP and MOONWALK**
+- **critique the clues in puzzles/space.ipuz**
+- **make a submission PDF of puzzles/space.ipuz**
+
+Puzzles are saved in a `puzzles/` folder inside the folder your session runs in.
 
 ## Setup
 
