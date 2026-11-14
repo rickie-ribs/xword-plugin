@@ -7,3 +7,5 @@ export const WORDLIST = join(GRID_GUIDE_HOME, 'wordlists', 'spreadthewordlist.tx
 export const NYT_DIR = join(GRID_GUIDE_HOME, 'nyt');
 export const COOKIE = join(NYT_DIR, 'cookie.txt');
 export const WORD_DATA = join(NYT_DIR, 'word-data.json');
+/** The submission PDF's contact block (name, address, email), saved by the user so each PDF reuses it. */
+export const CONTACT = join(GRID_GUIDE_HOME, 'contact.txt');

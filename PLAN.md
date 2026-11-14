@@ -28,7 +28,7 @@ This repo is separate so it can be public and change without touching XWORD_BUIL
   - `src/model`, `src/engine` (no worker or client files), `src/rules`, `src/io/ipuz.ts` and `src/io/nytJson.ts`
   - `scripts/xwCommands.ts`, `xw.ts` and `nyt-history.ts`
 
-  esbuild then bundles `plugin/dist/xw.mjs`, `nyt.mjs` and `setup.mjs`. **The `dist/` files are committed**, because a plugin installs by git clone and has no build step for the user. Users need only Node 20 or later.
+  esbuild then bundles `plugin/dist/xw.mjs`, `nyt.mjs`, `setup.mjs` and `pdf.mjs` (the submission PDF, from the app's `src/io/pdf.ts`; jsPDF's HTML and SVG add-ons are left out). **The `dist/` files are committed**, because a plugin installs by git clone and has no build step for the user. Users need only Node 20 or later.
 - **The plugin lives in `plugin/`.** The repo root holds the marketplace (`.claude-plugin/marketplace.json`, source `./plugin`) and the development files. So only the plugin installs, and this repo's `CLAUDE.md` isn't inside the plugin, where `claude plugin validate` would warn about it.
 - **Skills find the tools through `${CLAUDE_PLUGIN_ROOT}`,** which Claude Code substitutes in skill text (it isn't set in the Bash environment). The plugin has no `bin/` folder, because claude.ai won't install a plugin with one.
 - **Setup is a skill, `/grid-guide:setup`,** not a `commands/` file: the docs prefer skills for new plugins.

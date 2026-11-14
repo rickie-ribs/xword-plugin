@@ -39,14 +39,16 @@ Run `node "${CLAUDE_PLUGIN_ROOT}/dist/xw.mjs" doctor`. If the wordlist is missin
 
 7. **Check it.** Always run `check FILE --require WORD,WORD` last, after every edit, because `clear` can wipe letters from a required word. It must show no errors other than `not in the word list` for words you chose to use, no plural warning you haven't judged, and every required word in.
 
+8. **Make the hand-off page.** This step is required for every puzzle, whatever its size; never skip it or offer it as an option. It's the page the user reads, including on a phone. See below.
+
 ## Hand-off
 
-Make a hand-off page from `${CLAUDE_PLUGIN_ROOT}/skills/build-puzzle/handoff-template.html`. If the Artifact tool is available, publish it as a private Artifact and give the user its link, so it opens on a phone too. Otherwise save it as `puzzles/NAME.html` next to the `.ipuz` and give its path. Copy the template to the scratch folder, and change its title, `ROWS`, `REQUIRED`, `WORDS`, stats, not-on-the-list note, bigger-change requests and file line for this puzzle. The page builds its blank grid and entry list from `ROWS`. Mark a removal cost as tested only if you actually tried it. Save a copy next to the `.ipuz` file. Keep the template's credit line for the wordlist (Spread the Word(list), CC BY-NC-SA 4.0).
+Make a hand-off page from `${CLAUDE_PLUGIN_ROOT}/skills/build-puzzle/handoff-template.html`, and always save it as `puzzles/NAME.html` next to the `.ipuz`. Then publish it as a private Artifact and give the user its link, so it opens on a phone too. The Artifact tool may not be loaded yet: if it isn't in your tool list, search for it (ToolSearch, "Artifact") before deciding it's missing. Only when there's truly no Artifact tool, give the saved page's path instead. Copy the template to the scratch folder, and change its title, `ROWS`, `REQUIRED`, `WORDS`, stats, not-on-the-list note, bigger-change requests and file line for this puzzle. The page builds its blank grid and entry list from `ROWS`. Mark a removal cost as tested only if you actually tried it. Keep the template's credit line for the wordlist (Spread the Word(list), CC BY-NC-SA 4.0).
 
 In the reply and on the page, show the filled grid and a blank grid, list every entry by number under Across and Down, and give:
 - The file path.
 - Every word not on the list, with a short reason.
-- The ranked list of the 15 weakest entries, worst first, each with its entry number, what the word is (a plain definition or who it names, in `WORDS`' "What it is" field), and the reason it's weak. Don't guess at a meaning; check any you aren't sure of.
+- The ranked list of the 15 weakest entries (or every entry, on a grid with fewer), worst first, each with its entry number, what the word is (a plain definition or who it names, in `WORDS`' "What it is" field), and the reason it's weak. Don't guess at a meaning; check any you aren't sure of.
 - For the worst ones, which entries hold them in place and what removing them would cost, so the user can decide on any trade.
 - How any ordering request was read, plus the word count, blocks and Freshness.
 

@@ -4,7 +4,19 @@ A Claude Code plugin for crossword constructors. Ask Claude for a puzzle in plai
 
 > Build me a 15×15 with SPACESHIP and MOONWALK.
 
-You get an `.ipuz` file, which any crossword app that reads `.ipuz` can open, and a hand-off page that shows the grid, every entry and the weakest fill, ranked. Each weak entry comes with what holds it in place, so you can ask for a rework. You can also ask for a clue critique of any `.ipuz` file.
+You get an `.ipuz` file, which any crossword app that reads `.ipuz` can open, and a hand-off page that shows the grid, every entry and the weakest fill, ranked. Each weak entry comes with what holds it in place, so you can ask for a rework. You can also ask for a clue critique of any `.ipuz` file, and a submission-ready PDF once it's clued.
+
+### See it, solve it, share it
+
+[Crosshare](https://crosshare.org/upload) is a free crossword site that's a good place to take the `.ipuz` file next. Upload it to see the puzzle laid out, solve it yourself to test the fill, then add or edit clues in its constructor. When it's ready, share the Crosshare link with friends so they can solve it in the browser.
+
+### Submission-ready PDF
+
+After you're done tweaking clues, ask Claude for a submission PDF (or run `/grid-guide:submission-pdf`). You get the standard submission layout: your name, address and email with the filled grid on page 1, then the Across and Down clues with their answers. Claude asks for your contact details once and saves them on your computer for next time, and it tells you if any square is empty or any clue is missing.
+
+It works on any `.ipuz` file, not just ones grid-guide built. If you clued the puzzle in Crosshare, export it there (More → Download .ipuz File) and ask for a PDF of that file:
+
+> make a submission PDF of ~/Downloads/my-puzzle.ipuz
 
 ## Install
 
@@ -38,8 +50,8 @@ Run Claude Code on the computer where you ran setup, turn on Remote Control, and
 
 ## What's inside
 
-- `plugin/skills/`: `setup`, `build-puzzle` and `critique-clues`
-- `plugin/dist/`: the bundled command-line tool the skills run (`xw.mjs`), plus the setup and NYT download helpers
+- `plugin/skills/`: `setup`, `build-puzzle`, `critique-clues` and `submission-pdf`
+- `plugin/dist/`: the bundled command-line tool the skills run (`xw.mjs`), plus the PDF maker (`pdf.mjs`) and the setup and NYT download helpers
 - The grid, fill and validation code comes from the author's crossword workbench, copied into `vendor/` by `npm run sync`.
 
 ## Credits and licenses

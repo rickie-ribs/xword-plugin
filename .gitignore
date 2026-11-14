@@ -5,3 +5,5 @@ wordlists/
 nyt/
 cookie.txt
 scratch/
+.DS_Store
+docs/test-plan.md

@@ -8,7 +8,7 @@
     {
       "name": "grid-guide",
       "source": "./plugin",
-      "description": "Build filled crossword grids from your theme words and critique clues."
+      "description": "Build filled crossword grids from your theme words critique clues and make submission PDFs."
     }
   ]
 }

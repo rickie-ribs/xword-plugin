@@ -1,8 +1,8 @@
 {
   "name": "grid-guide",
   "displayName": "Grid Guide",
-  "version": "0.1.0",
-  "description": "Build filled crossword grids from your theme words and critique clues, with a phone-friendly hand-off page.",
+  "version": "0.1.1",
+  "description": "Build filled crossword grids from your theme words critique clues and make submission PDFs, with a phone-friendly hand-off page.",
   "author": { "name": "Eric Ribbeck" },
   "repository": "https://github.com/rickie-ribs/xword-plugin",
   "license": "MIT",

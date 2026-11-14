@@ -2,7 +2,7 @@
 import { build } from 'esbuild';
 import { existsSync } from 'node:fs';
 
-const entries = ['xw', 'nyt', 'setup'].filter((name) => existsSync(`src/${name}.ts`));
+const entries = ['xw', 'nyt', 'setup', 'pdf'].filter((name) => existsSync(`src/${name}.ts`));
 await build({
   entryPoints: entries.map((name) => ({ in: `src/${name}.ts`, out: name })),
   outdir: 'plugin/dist',
@@ -11,6 +11,9 @@ await build({
   platform: 'node',
   format: 'esm',
   target: 'node20',
+  // jsPDF loads these only to render HTML or SVG, which the submission PDF never does.
+  external: ['html2canvas', 'canvg', 'dompurify'],
+  minify: true,
   legalComments: 'none',
   logLevel: 'info',
 });

@@ -22,6 +22,7 @@ const FILES = [
   'src/engine/fill.ts',
   'src/io/ipuz.ts',
   'src/io/nytJson.ts',
+  'src/io/pdf.ts',
   'src/history/nytHistory.json',
   'scripts/xw.ts',
   'scripts/xwCommands.ts',
