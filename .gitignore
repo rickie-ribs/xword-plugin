@@ -1,0 +1,7 @@
+node_modules/
+# Never commit a wordlist, NYT puzzles or a cookie: they belong in ~/.grid-guide/ on each user's computer.
+wordlists/
+*.dict
+nyt/
+cookie.txt
+scratch/

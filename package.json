@@ -1,0 +1,25 @@
+{
+  "name": "grid-guide",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "A Claude Code plugin that builds crossword grids and critiques clues.",
+  "license": "MIT",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "sync": "tsx scripts/sync.ts",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "immer": "^11.2.9"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}
