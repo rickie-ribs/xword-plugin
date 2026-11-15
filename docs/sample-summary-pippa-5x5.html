@@ -1,0 +1,320 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>PIPPA 5x5 Puzzle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bitter:wght@600&display=swap">
+<style>
+/* Layout: the grid stays pinned while the ranked words scroll beside it, so a word and its squares are always in view together. */
+:root {
+  --bg: #f5f6f8; --panel: #ffffff; --fg: #171a21; --muted: #5a6170; --line: #d5d9e1;
+  --block: #171a21; --required: #d8e5fb; --required-fg: #123f86;
+  --selected: #ffd76a; --selected-fg: #3f2c00; --crossing: #e4e7ec;
+  --flag: #fff0c7; --flag-fg: #6b4a00;
+  --display: "Bitter", Georgia, serif; --body: "Atkinson Hyperlegible", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12151b; --panel: #1b1f27; --fg: #eceef2; --muted: #a2a9b6; --line: #343a46;
+    --block: #000000; --required: #1d3a68; --required-fg: #c6dafc;
+    --selected: #d8a92b; --selected-fg: #1d1500; --crossing: #2d333e;
+    --flag: #43340d; --flag-fg: #f6dc95; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12151b; --panel: #1b1f27; --fg: #eceef2; --muted: #a2a9b6; --line: #343a46;
+  --block: #000000; --required: #1d3a68; --required-fg: #c6dafc;
+  --selected: #d8a92b; --selected-fg: #1d1500; --crossing: #2d333e;
+  --flag: #43340d; --flag-fg: #f6dc95; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font: 16px/1.5 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 40px;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+main { max-width: 960px; margin: 0 auto; display: grid; gap: 16px; }
+h1 { font: 600 1.6rem/1.2 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 600 1.05rem/1.3 var(--display); margin: 0 0 8px; }
+p { margin: 0; }
+.sub { color: var(--muted); font-size: .9rem; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-width: 420px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+.stat span { display: block; color: var(--muted); font-size: .78rem; }
+.stat b { font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.work { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.pin { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 8px); z-index: 5; background: var(--bg); padding-block: 4px 8px; min-width: 0; }
+.grid { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); border: 2px solid var(--block); width: 100%; max-width: 320px; margin: 0 auto; background: var(--panel); }
+.cell { aspect-ratio: 1; max-width: 100%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: clamp(20px, 7vw, 30px); border: .5px solid var(--line); min-width: 0; }
+.cell.block { background: var(--block); border-color: var(--block); }
+.cell.required { background: var(--required); color: var(--required-fg); }
+.cell.crossing { background: var(--crossing); }
+.cell.selected { background: var(--selected); color: var(--selected-fg); }
+.key { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; font-size: .78rem; color: var(--muted); margin-top: 6px; }
+.key i { display: inline-block; width: 10px; height: 10px; margin-right: 4px; border: 1px solid var(--line); }
+.list { min-width: 0; }
+.word { border-top: 1px solid var(--line); }
+.word:last-child { border-bottom: 1px solid var(--line); }
+.word > button { all: unset; box-sizing: border-box; display: flex; gap: 10px; align-items: baseline; width: 100%; padding: 9px 6px; cursor: pointer; }
+.word > button:focus-visible, .copy:focus-visible { outline: 2px solid var(--required-fg); outline-offset: 1px; }
+.word > button[aria-expanded="true"] { background: var(--selected); color: var(--selected-fg); }
+.rank { width: 1.4em; text-align: right; font-variant-numeric: tabular-nums; opacity: .7; }
+.name { font-weight: 700; letter-spacing: .03em; }
+.ref { margin-left: auto; font-size: .85rem; opacity: .8; white-space: nowrap; }
+.detail { padding: 10px 6px 14px; display: grid; gap: 8px; font-size: .92rem; }
+.detail h3 { margin: 0; font: 700 .76rem/1.3 var(--body); color: var(--muted); letter-spacing: .03em; }
+.ask { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: grid; gap: 8px; }
+.ask p { font-size: .88rem; user-select: all; -webkit-user-select: all; }
+.copy { font: 700 .86rem var(--body); color: var(--fg); background: transparent; border: 1px solid var(--muted); border-radius: 6px; padding: 7px 12px; min-height: 36px; cursor: pointer; justify-self: start; }
+.flag { background: var(--flag); color: var(--flag-fg); border-radius: 6px; padding: 10px 12px; font-size: .92rem; }
+.bigger { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.bigger .ask { min-width: 0; }
+.sheet { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+.sheet > div { min-width: 0; }
+.cell.blank { position: relative; }
+.cell.blank small { position: absolute; top: 2px; left: 3px; font-size: 11px; font-weight: 400; line-height: 1; }
+.entries { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.entries h3 { margin: 0 0 4px; font: 700 .76rem/1.3 var(--body); color: var(--muted); letter-spacing: .03em; }
+.entries ol { list-style: none; margin: 0; padding: 0; font-size: .92rem; }
+.entries li { display: flex; gap: 8px; padding-block: 1px; overflow-wrap: anywhere; }
+.entries li span { width: 1.6em; flex: none; text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.file { font-size: .88rem; color: var(--muted); overflow-wrap: anywhere; }
+code { font-size: .92em; }
+@media (max-width: 720px) {
+  .work { grid-template-columns: minmax(0, 1fr); }
+  .bigger { grid-template-columns: minmax(0, 1fr); }
+  .sheet { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+<main>
+  <header>
+    <h1>PIPPA 5x5 Puzzle</h1>
+    <p class="sub">5×5 filled grid with no blocks. Tap a word to find it in the grid and see what removing it would cost. Tap it again to clear the highlights.</p>
+  </header>
+
+  <section class="stats" aria-label="Puzzle stats">
+    <div class="stat"><span>Words</span><b>10</b></div>
+    <div class="stat"><span>Blocks (% of squares)</span><b id="blocks"></b></div>
+  </section>
+
+  <p class="flag"><b>Not on the word list: PIPPA.</b> It was required, so it stays. Crossword software that checks a word list may flag it.</p>
+
+  <section class="work">
+    <div class="pin">
+      <div class="grid" id="grid" role="img" aria-label="The filled 5 by 5 crossword grid"></div>
+      <div class="key">
+        <span><i style="background:var(--required)"></i>Required</span>
+        <span><i style="background:var(--selected)"></i>Selected</span>
+        <span><i style="background:var(--crossing)"></i>Crossings</span>
+      </div>
+    </div>
+    <div class="list">
+      <h2>All 10 entries, weakest first</h2>
+      <div id="words"></div>
+    </div>
+  </section>
+
+  <section class="sheet">
+    <div>
+      <h2>Blank grid</h2>
+      <div class="grid" id="blank" role="img" aria-label="The numbered grid with its squares empty"></div>
+    </div>
+    <div>
+      <h2>Clues</h2>
+      <div class="entries">
+        <div><h3>ACROSS</h3><ol id="across"></ol></div>
+        <div><h3>DOWN</h3><ol id="down"></ol></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Bigger changes</h2>
+    <p class="sub" style="margin-bottom:8px">Copy a request and paste it into your Claude session. Nothing in the puzzle changes from this page.</p>
+    <div class="bigger">
+      <div class="ask"><p>Rebuild the PIPPA 5x5 puzzle with a block pattern, so ASLAN and ANSEL can be replaced, and show me the before and after.</p><button class="copy" type="button">Copy request</button></div>
+      <div class="ask"><p>Critique the clues in the PIPPA 5x5 puzzle and suggest rewrites.</p><button class="copy" type="button">Copy request</button></div>
+    </div>
+  </section>
+
+  <p class="file">Built with grid-guide. Fill words from <a href="https://www.spreadthewordlist.com/">Spread the Word(list)</a> by Brooke Husic and Enrique Henestroza Anguiano, CC BY-NC-SA 4.0.</p>
+</main>
+
+<script>
+var ROWS = ["PIPPA","ASLAN","CLASS","TENSE","STEEL"];
+var REQUIRED = [[0,0,"a",5]];
+var CLUES = {
+  a1: "Kate Middleton's sister", a6: "Lion in the Narnia books", a7: "Group of students", a8: "On edge", a9: "Girder material",
+  d1: "Agreements between nations", d2: "Tiny island", d3: "Carpenter's smoothing tool", d4: "Out of fashion", d5: "Photographer Adams"
+};
+var NOT_TESTED = "Not tested yet.";
+var WORDS = [
+  ["ANSEL","5 Down",0,4,"d","A first name, best known from the photographer Ansel Adams.","A first name that only works with a proper-name clue.","Not tested yet. The A is the last letter of PIPPA, and the L is fixed by STEEL, so a replacement must start with A and end with L, or the bottom row changes too."],
+  ["ASLAN","6 Across",1,0,"a","The lion in C. S. Lewis's Narnia books.","A fictional character's name that many solvers will need crossings for.",NOT_TESTED],
+  ["PASSE","4 Down",0,3,"d","French for past its prime or out of date.","Dated, and it is usually written with an accent.",NOT_TESTED],
+  ["PIPPA","1 Across",0,0,"a","A given name, best known from Pippa Middleton.","The required word. It is a name and is not on the word list.","It cannot be removed. Every down entry from it starts with P, I, P, P or A, which limits the whole grid."],
+  ["ISLET","2 Down",0,1,"d","A very small island.","A real word, but a bit literary and uncommon in speech.",NOT_TESTED],
+  ["PACTS","1 Down",0,0,"d","Agreements between people or nations.","A plain plural. It is fine, just not exciting.",NOT_TESTED],
+  ["TENSE","8 Across",3,0,"a","Stretched tight, or nervous.","A good everyday word. It is the common kind of fill.",NOT_TESTED],
+  ["STEEL","9 Across",4,0,"a","An iron and carbon alloy.","A solid, common word.",NOT_TESTED],
+  ["CLASS","7 Across",2,0,"a","A group of students, or a category.","A solid, common word.",NOT_TESTED],
+  ["PLANE","3 Down",0,2,"d","An aircraft, or a flat surface.","A solid, common word.",NOT_TESTED]
+];
+
+function letterAt(r, c) { var row = ROWS[r]; var ch = row && row[c]; return ch && ch !== "#" ? ch : null; }
+function entryThrough(r, c, dir) {
+  var dr = dir === "d" ? 1 : 0, dc = dir === "a" ? 1 : 0, cells = [];
+  while (letterAt(r - dr, c - dc)) { r -= dr; c -= dc; }
+  while (letterAt(r, c)) { cells.push([r, c]); r += dr; c += dc; }
+  return cells;
+}
+function spell(cells) { return cells.map(function (p) { return ROWS[p[0]][p[1]]; }).join(""); }
+function key(p) { return p[0] + "," + p[1]; }
+
+var required = {};
+REQUIRED.forEach(function (q) {
+  for (var i = 0; i < q[3]; i++) required[q[2] === "a" ? q[0] + "," + (q[1] + i) : (q[0] + i) + "," + q[1]] = true;
+});
+var squares = ROWS.join("");
+var blockCount = squares.split("#").length - 1;
+document.getElementById("blocks").textContent = blockCount + " (" + Math.round(100 * blockCount / squares.length) + "%)";
+var gridEl = document.getElementById("grid");
+document.documentElement.style.setProperty("--n", ROWS[0].length);
+ROWS.forEach(function (row, r) {
+  row.split("").forEach(function (ch, c) {
+    var cell = document.createElement("div");
+    cell.dataset.key = r + "," + c;
+    cell.className = "cell" + (ch === "#" ? " block" : required[r + "," + c] ? " required" : "");
+    cell.textContent = ch === "#" ? "" : ch;
+    gridEl.appendChild(cell);
+  });
+});
+
+function wireCopy(button) {
+  button.addEventListener("click", function () {
+    var text = button.parentNode.querySelector("p").textContent;
+    function done(message) { button.textContent = message; setTimeout(function () { button.textContent = "Copy request"; }, 2000); }
+    function selectIt() {
+      var range = document.createRange();
+      range.selectNodeContents(button.parentNode.querySelector("p"));
+      var selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      done("Selected, copy it now");
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done("Copied"); }, selectIt);
+    else selectIt();
+  });
+}
+
+function section(label, text) {
+  var wrap = document.createElement("div");
+  var heading = document.createElement("h3");
+  var body = document.createElement("p");
+  heading.textContent = label;
+  body.textContent = text;
+  wrap.appendChild(heading);
+  wrap.appendChild(body);
+  return wrap;
+}
+
+var listEl = document.getElementById("words");
+var rows = WORDS.map(function (w, i) {
+  var cells = entryThrough(w[2], w[3], w[4]);
+  var other = w[4] === "a" ? "d" : "a";
+  var crossings = cells.map(function (p) { return entryThrough(p[0], p[1], other); }).filter(function (e) { return e.length > 1; });
+
+  var item = document.createElement("div");
+  item.className = "word";
+  var button = document.createElement("button");
+  button.type = "button";
+  button.setAttribute("aria-expanded", "false");
+  button.innerHTML = '<span class="rank">' + (i + 1) + '</span><span class="name">' + w[0] + '</span><span class="ref">' + w[1] + "</span>";
+  var detail = document.createElement("div");
+  detail.className = "detail";
+  detail.hidden = true;
+  detail.appendChild(section("What it is", w[5]));
+  detail.appendChild(section("Why it's weak", w[6]));
+  detail.appendChild(section("Held in place by", crossings.map(spell).join(", ")));
+  detail.appendChild(section("What removing it costs", w[7]));
+  var ask = document.createElement("div");
+  ask.className = "ask";
+  var askText = document.createElement("p");
+  askText.textContent = "Try replacing " + w[0] + " (" + w[1] + ") in the PIPPA 5x5 puzzle and show me what it would cost.";
+  var copy = document.createElement("button");
+  copy.className = "copy";
+  copy.type = "button";
+  copy.textContent = "Copy request";
+  wireCopy(copy);
+  ask.appendChild(askText);
+  ask.appendChild(copy);
+  detail.appendChild(ask);
+  item.appendChild(button);
+  item.appendChild(detail);
+  listEl.appendChild(item);
+  button.addEventListener("click", function () { select(i === openIndex ? -1 : i); });
+  return { button: button, detail: detail, cells: cells, crossings: crossings };
+});
+
+var openIndex = -1;
+function select(index) {
+  openIndex = index;
+  rows.forEach(function (row, i) {
+    var on = i === index;
+    row.button.setAttribute("aria-expanded", on ? "true" : "false");
+    row.detail.hidden = !on;
+  });
+  var current = rows[index], selected = {}, crossing = {};
+  if (current) {
+    current.cells.forEach(function (p) { selected[key(p)] = true; });
+    current.crossings.forEach(function (e) { e.forEach(function (p) { crossing[key(p)] = true; }); });
+  }
+  gridEl.querySelectorAll(".cell").forEach(function (cell) {
+    var k = cell.dataset.key;
+    cell.classList.toggle("selected", !!selected[k]);
+    cell.classList.toggle("crossing", !!crossing[k] && !selected[k] && !required[k]);
+  });
+}
+
+document.querySelectorAll(".bigger .copy").forEach(wireCopy);
+select(0);
+
+// The blank grid and the entry list come from ROWS, numbered in reading order.
+var blankEl = document.getElementById("blank"), entryNumber = 0;
+ROWS.forEach(function (row, r) {
+  row.split("").forEach(function (ch, c) {
+    var cell = document.createElement("div");
+    cell.className = "cell blank" + (ch === "#" ? " block" : "");
+    blankEl.appendChild(cell);
+    if (ch === "#") return;
+    var across = !letterAt(r, c - 1) && letterAt(r, c + 1);
+    var down = !letterAt(r - 1, c) && letterAt(r + 1, c);
+    if (!across && !down) return;
+    entryNumber++;
+    var number = document.createElement("small");
+    number.textContent = entryNumber;
+    cell.appendChild(number);
+    if (across) addEntry("across", entryNumber, spell(entryThrough(r, c, "a")));
+    if (down) addEntry("down", entryNumber, spell(entryThrough(r, c, "d")));
+  });
+});
+blankEl.style.setProperty("--n", ROWS[0].length);
+function addEntry(listId, number, word) {
+  var item = document.createElement("li");
+  var label = document.createElement("span");
+  label.textContent = number;
+  item.appendChild(label);
+  var clue = document.createElement("div");
+  clue.textContent = CLUES[(listId === "across" ? "a" : "d") + number] || "";
+  var answer = document.createElement("small");
+  answer.textContent = " " + word;
+  answer.style.color = "var(--muted)";
+  clue.appendChild(answer);
+  item.appendChild(clue);
+  document.getElementById(listId).appendChild(item);
+}
+</script>
+
+</body></html>

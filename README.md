@@ -4,7 +4,7 @@ A Claude Code plugin for crossword constructors. Ask Claude for a puzzle in plai
 
 > Build me a 15×15 with SPACESHIP and MOONWALK.
 
-You get an `.ipuz` file, which any crossword app that reads `.ipuz` can open, and a puzzle summary page that shows the grid, every entry and potential areas to improve. You can also ask for help writing clues or a clue critique of any `.ipuz` file, and a submission-ready PDF once it's clued.
+You get an `.ipuz` file, which any crossword app that reads `.ipuz` can open, and a puzzle summary page that shows the grid, every entry and potential areas to improve. See [a sample summary page](docs/sample-summary-pippa-5x5.html) for a 5×5 built around PIPPA (download it and open it in a browser). You can also ask for help writing clues or a clue critique of any `.ipuz` file, and a submission-ready PDF once it's clued.
 
 ### See it, solve it, share it
 
