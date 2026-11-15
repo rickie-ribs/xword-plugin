@@ -4,7 +4,7 @@ A Claude Code plugin for crossword constructors. Ask Claude for a puzzle in plai
 
 > Build me a 15×15 with SPACESHIP and MOONWALK.
 
-You get an `.ipuz` file, which any crossword app that reads `.ipuz` can open, and a hand-off page that shows the grid, every entry and the weakest fill, ranked. Each weak entry comes with what holds it in place, so you can ask for a rework. You can also ask for a clue critique of any `.ipuz` file, and a submission-ready PDF once it's clued.
+You get an `.ipuz` file, which any crossword app that reads `.ipuz` can open, and a puzzle summary page that shows the grid, every entry and potential areas to improve. You can also ask for help writing clues or a clue critique of any `.ipuz` file, and a submission-ready PDF once it's clued.
 
 ### See it, solve it, share it
 
@@ -49,7 +49,6 @@ claude
 /grid-guide:setup
 ```
 
-Lines starting with `/` are typed at Claude's prompt, not in your shell. Inside a session, `/plugin marketplace add rickie-ribs/xword-plugin` and `/plugin install grid-guide@xword-plugin` do the same as the two shell commands.
 
 ### Using it
 
